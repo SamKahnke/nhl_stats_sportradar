@@ -61,18 +61,75 @@ setInterval(() => {
     if (gamesToRecord.length > 0) {
         recordGames();
     }
-}, 10000);
+}, 1000);
 
 async function recordGames() {
     Promise.all(gamesToRecord.map(async (gameID) => {
         const game = await pool.query(`SELECT * FROM games WHERE game_pk = ${gameID}`);
-        const response = await axios.get(`${root}/game/${gameID}/content`);
-        if (game.rows.length > 0) {
-            console.log(game.rows[0]);
-        }
-        if (response && response.data) {
-            console.log(response.data.link);
-            console.log(new Date());
+        
+        if (game.rows.length === 0) {
+            // insert
+            const stats = await axios.get(`${root}/game/${gameID}/feed/live/diffPatch?startTimecode=20210120_100000`);
+            Object.keys(stats.data.liveData.boxscore.teams).map((team, index) => {
+                return Object.keys(stats.data.liveData.boxscore.teams[team].players).map(async (player, index) => {
+                    await pool.query(`INSERT INTO game_stats (
+                        game_pk,
+                        player_id,
+                        team_id,
+                        team_name,
+                        name,
+                        age,
+                        number,
+                        position,
+                        assists,
+                        goals,
+                        hits,
+                        penalty_minutes) VALUES (
+                            ${gameID},
+                            "${player}",
+                            ${stats.data.liveData.boxscore.teams[team].team.id},
+                            "${stats.data.liveData.boxscore.teams[team].team.name || null}",
+                            "${stats.data.liveData.boxscore.teams[team].players[player].person.fullName || null}",
+                            ${stats.data.gameData.players[player].currentAge || null},
+                            ${stats.data.liveData.boxscore.teams[team].players[player].jerseyNumber || null},
+                            "${stats.data.liveData.boxscore.teams[team].players[player].position.name || null}",
+                            ${stats.data.liveData.boxscore.teams[team].players[player].stats.skaterStats?.assists || 0},
+                            ${stats.data.liveData.boxscore.teams[team].players[player].stats.skaterStats?.goals || 0},
+                            ${stats.data.liveData.boxscore.teams[team].players[player].stats.skaterStats?.hits || 0},
+                            ${stats.data.liveData.boxscore.teams[team].players[player].stats.skaterStats?.penaltyMinutes || 0}
+                        )
+                    `).catch((error) => {
+                        console.log(error);
+                        console.log(`${gameID},
+                            "${player}",
+                            ${stats.data.liveData.boxscore.teams[team].team.id},
+                            "${stats.data.liveData.boxscore.teams[team].team.name || null}",
+                            "${stats.data.liveData.boxscore.teams[team].players[player].person.fullName || null}",
+                            ${stats.data.gameData.players[player].currentAge || null},
+                            ${stats.data.liveData.boxscore.teams[team].players[player].jerseyNumber || null},
+                            "${stats.data.liveData.boxscore.teams[team].players[player].position.name || null}",
+                            ${stats.data.liveData.boxscore.teams[team].players[player].stats.skaterStats?.assists || 0},
+                            ${stats.data.liveData.boxscore.teams[team].players[player].stats.skaterStats?.goals || 0},
+                            ${stats.data.liveData.boxscore.teams[team].players[player].stats.skaterStats?.hits || 0},
+                            ${stats.data.liveData.boxscore.teams[team].players[player].stats.skaterStats?.penaltyMinutes || 0}`);
+                    });
+                    await pool.query(`INSERT INTO games (
+                            game_pk,
+                            home_team_id,
+                            away_team_id,
+                            status
+                        ) VALUES (
+                            ${gameID},
+                            ${stats.data.gameData.teams.home.id},
+                            ${stats.data.gameData.teams.away.id},
+                            ${stats.data.gameData.status.statusCode}
+                        )
+                    `);
+                });
+            });
+        } else {
+            // update
+            // remove from list
         }
     }));
 }
@@ -82,4 +139,3 @@ app.listen(port, () => {
 });
 
 checkForGames();
-
