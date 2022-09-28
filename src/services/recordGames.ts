@@ -4,7 +4,8 @@ import { isGameComplete } from "../utils/utils";
 import { Game, GameStat } from "./types";
 const config = require('config');
 
-export async function recordGames(gamesQueue: string[], completeRecordedGames: string[]): Promise<void> {
+export async function RecordGames(gamesQueue: string[], completeRecordedGames: string[]): Promise<void> {
+    console.log("RecordGames");
     Promise.all(gamesQueue.map(async (gamePK) => {
         const game = await db.query(`SELECT * FROM games WHERE game_pk = ${gamePK}`);
         const stats = await axios.get(`${config.get('liveData.rootURL')}/game/${gamePK}/feed/live/diffPatch?startTimecode=${config.get('liveData.startOfSeason')}`);

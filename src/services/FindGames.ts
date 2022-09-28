@@ -2,7 +2,8 @@ import axios from "axios";
 import { isGameRecordable } from "../utils/utils";
 const config = require('config');
 
-export async function checkForGames(gamesQueue: string[], completeRecordedGames: string[]): Promise<void> {
+export async function FindGames(gamesQueue: string[], completeRecordedGames: string[]): Promise<void> {
+    console.log("FindGames");
     try {
         const response = await axios.get(`${config.get('liveData.rootURL')}/schedule/?season=${config.get('liveData.startingSeason')}`);
         for (let date of response.data.dates) {

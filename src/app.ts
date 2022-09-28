@@ -1,9 +1,9 @@
 import express from 'express';
 import { Pool } from 'pg';
-import { runEngine } from './services/runEngine';
-const config = require('config');
+import { RunPipeline } from './services/RunPipeline';
 
 const app = express();
+const config = require('config');
 const port = config.get('host.port');
 
 // Database
@@ -25,10 +25,12 @@ const connectToDB = async () => {
 
 connectToDB();
 
-// Open the pipeline
-runEngine();
-
 // Listen on port
 app.listen(port, () => {
   return console.log(`Express is listening at http://localhost:${port}`);
 });
+
+// Open the pipeline
+RunPipeline();
+
+
