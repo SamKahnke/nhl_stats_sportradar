@@ -1,8 +1,8 @@
-import { FindGames } from "./FindGames";
-import { RecordGames } from "./RecordGames";
+import { FindGames } from './FindGames';
+import { RecordGames } from './RecordGames';
 
 export function RunPipeline(): void {
-    console.log("RunPipeline");
+    console.log('RunPipeline');
     // Queue
     let gamesQueue: string[] = [];
     let completeRecordedGames: string[] = [];

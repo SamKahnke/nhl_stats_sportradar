@@ -1,11 +1,11 @@
-import axios from "axios";
-import { db } from "../app";
-import { isGameComplete } from "../utils/utils";
-import { Game, GameStat } from "./types";
+import axios from 'axios';
+import { db } from '../app';
+import { isGameComplete } from '../utils/utils';
+import { Game, GameStat } from './types';
 const config = require('config');
 
 export async function RecordGames(gamesQueue: string[], completeRecordedGames: string[]): Promise<void> {
-    console.log("RecordGames");
+    console.log('RecordGames');
     Promise.all(gamesQueue.map(async (gamePK) => {
         const game = await db.query(`SELECT * FROM games WHERE game_pk = ${gamePK}`);
         const stats = await axios.get(`${config.get('liveData.rootURL')}/game/${gamePK}/feed/live/diffPatch?startTimecode=${config.get('liveData.startOfSeason')}`);
@@ -21,7 +21,8 @@ export async function RecordGames(gamesQueue: string[], completeRecordedGames: s
 
         if (game.rows.length === 0) {
             // Insert game
-            await db.query(`INSERT INTO games (
+            await db.query(
+                `INSERT INTO games (
                     game_pk,
                     home_team_id,
                     away_team_id,
@@ -33,8 +34,8 @@ export async function RecordGames(gamesQueue: string[], completeRecordedGames: s
                     ${gameData.awayTeamID},
                     ${gameData.status},
                     ${gameData.statusName}
-                )
-            `);
+                )`
+            );
             // Insert game_stats for each player
             Object.keys(boxscoreData.teams).map((team, index) => {
                 return Object.keys(boxscoreData.teams[team].players).map(async (player, index) => {
@@ -52,32 +53,33 @@ export async function RecordGames(gamesQueue: string[], completeRecordedGames: s
                         hits: boxscoreData.teams[team].players[player].stats.skaterStats?.hits || 0,
                         penaltyMinutes: boxscoreData.teams[team].players[player].stats.skaterStats?.penaltyMinutes || 0
                     }
-                    const INSERT_game_stats = `INSERT INTO game_stats (
-                        game_pk,
-                        player_id,
-                        team_id,
-                        team_name,
-                        name,
-                        age,
-                        number,
-                        position,
-                        assists,
-                        goals,
-                        hits,
-                        penalty_minutes) VALUES (
-                            ${gameStatData.gamePK},
-                            ${gameStatData.playerID},
-                            ${gameStatData.teamID},
-                            ${gameStatData.teamName},
-                            ${gameStatData.name},
-                            ${gameStatData.age},
-                            ${gameStatData.number},
-                            ${gameStatData.position},
-                            ${gameStatData.assists},
-                            ${gameStatData.goals},
-                            ${gameStatData.hits},
-                            ${gameStatData.penaltyMinutes}
-                        )`;
+                    const INSERT_game_stats =
+                        `INSERT INTO game_stats (
+                            game_pk,
+                            player_id,
+                            team_id,
+                            team_name,
+                            name,
+                            age,
+                            number,
+                            position,
+                            assists,
+                            goals,
+                            hits,
+                            penalty_minutes) VALUES (
+                                ${gameStatData.gamePK},
+                                ${gameStatData.playerID},
+                                ${gameStatData.teamID},
+                                ${gameStatData.teamName},
+                                ${gameStatData.name},
+                                ${gameStatData.age},
+                                ${gameStatData.number},
+                                ${gameStatData.position},
+                                ${gameStatData.assists},
+                                ${gameStatData.goals},
+                                ${gameStatData.hits},
+                                ${gameStatData.penaltyMinutes}
+                            )`;
                     await db.query(INSERT_game_stats).catch((error) => {
                         console.log('Error in INSERT_game_stats:', error);
                         console.log('Query:', INSERT_game_stats);
@@ -106,19 +108,20 @@ export async function RecordGames(gamesQueue: string[], completeRecordedGames: s
                         hits: boxscoreData.teams[team].players[player].stats.skaterStats?.hits || 0,
                         penaltyMinutes: boxscoreData.teams[team].players[player].stats.skaterStats?.penaltyMinutes || 0
                     }
-                    const UPDATE_game_stats = `UPDATE game_stats SET
-                        player_id = ${gameStatData.playerID},
-                        team_id = ${gameStatData.teamID},
-                        team_name = ${gameStatData.teamName},
-                        name = ${gameStatData.name},
-                        age = ${gameStatData.age},
-                        number = ${gameStatData.number},
-                        position = ${gameStatData.position},
-                        assists = ${gameStatData.assists},
-                        goals = ${gameStatData.goals},
-                        hits = ${gameStatData.hits},
-                        penalty_minutes = ${gameStatData.penaltyMinutes}
-                        WHERE game_pk = ${gameStatData.gamePK} AND player_id = ${gameStatData.playerID}`;
+                    const UPDATE_game_stats =
+                        `UPDATE game_stats SET
+                            player_id = ${gameStatData.playerID},
+                            team_id = ${gameStatData.teamID},
+                            team_name = ${gameStatData.teamName},
+                            name = ${gameStatData.name},
+                            age = ${gameStatData.age},
+                            number = ${gameStatData.number},
+                            position = ${gameStatData.position},
+                            assists = ${gameStatData.assists},
+                            goals = ${gameStatData.goals},
+                            hits = ${gameStatData.hits},
+                            penalty_minutes = ${gameStatData.penaltyMinutes}
+                            WHERE game_pk = ${gameStatData.gamePK} AND player_id = ${gameStatData.playerID}`;
                     await db.query(UPDATE_game_stats).catch((error) => {
                         console.log('Error in UPDATE_game_stats:', error);
                         console.log('Query:', UPDATE_game_stats);
@@ -126,13 +129,14 @@ export async function RecordGames(gamesQueue: string[], completeRecordedGames: s
                 }
             )});
             // Update game
-            await db.query(`UPDATE games SET
-                home_team_id = ${gameData.homeTeamID},
-                away_team_id = ${gameData.awayTeamID},
-                status = ${gameData.status},
-                status_name = ${gameData.statusName}
-                WHERE game_pk = ${gameData.gamePK}
-            `);
+            await db.query(
+                `UPDATE games SET
+                    home_team_id = ${gameData.homeTeamID},
+                    away_team_id = ${gameData.awayTeamID},
+                    status = ${gameData.status},
+                    status_name = ${gameData.statusName}
+                    WHERE game_pk = ${gameData.gamePK}`
+            );
         }
         // Remove completed games from queue
         if (isGameComplete(simpleGameData.status.statusCode)) {

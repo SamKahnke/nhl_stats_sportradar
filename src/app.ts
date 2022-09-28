@@ -1,5 +1,6 @@
 import express from 'express';
 import { Pool } from 'pg';
+import { InitializeDBTables } from './services/initializeDBTables';
 import { RunPipeline } from './services/RunPipeline';
 
 const app = express();
@@ -30,7 +31,12 @@ app.listen(port, () => {
   return console.log(`Express is listening at http://localhost:${port}`);
 });
 
-// Open the pipeline
-RunPipeline();
+// Initialize tables if none exist
+InitializeDBTables().then(() => {
+  // Open the pipeline
+  RunPipeline();
+});
+
+
 
 
