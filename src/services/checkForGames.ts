@@ -15,8 +15,6 @@ export async function checkForGames(gamesQueue, completeRecordedGames) {
                 }
             }
         };
-        console.log(`checkForGames() found ${gamesQueue.length} games that need recording`);
-        console.log('gamesQueue', gamesQueue);
     } catch (error) {
         console.error(error);
     }

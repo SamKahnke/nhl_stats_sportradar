@@ -1,8 +1,7 @@
 import express from 'express';
-import postgresql from 'pg';
+import { Pool } from 'pg';
 import { runEngine } from './services/runEngine';
 
-const { Pool } = postgresql;
 const app = express();
 
 export const root = 'https://statsapi.web.nhl.com/api/v1';
@@ -27,10 +26,10 @@ const connectToDB = async () => {
 
 connectToDB();
 
-// Opens the pipeline
+// Open the pipeline
 runEngine();
 
-// Listens on port
+// Listen on port
 app.listen(port, () => {
   return console.log(`Express is listening at http://localhost:${port}`);
 });
