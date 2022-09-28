@@ -1,0 +1,17 @@
+{
+    "host": {
+        "port": 3000
+    },
+    "database": {
+        "host": "localhost",
+        "user": "postgres",
+        "database": "nhl_stats",
+        "password": "password",
+        "port": 5000
+    },
+    "liveData": {
+        "rootURL": "https://statsapi.web.nhl.com/api/v1",
+        "startingSeason": "20222023",
+        "startOfSeason": "20220101_000000"
+    } 
+}

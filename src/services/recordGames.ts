@@ -1,17 +1,18 @@
 import axios from "axios";
-import { pool, root } from "../app";
+import { db } from "../app";
 import { isGameComplete } from "../utils/utils";
+const config = require('config');
 
 export async function recordGames(gamesQueue, completeRecordedGames) {
     Promise.all(gamesQueue.map(async (gamePK) => {
-        const game = await pool.query(`SELECT * FROM games WHERE game_pk = ${gamePK}`);
-        const stats = await axios.get(`${root}/game/${gamePK}/feed/live/diffPatch?startTimecode=20220101_000000`);
+        const game = await db.query(`SELECT * FROM games WHERE game_pk = ${gamePK}`);
+        const stats = await axios.get(`${config.get('liveData.rootURL')}/game/${gamePK}/feed/live/diffPatch?startTimecode=${config.get('liveData.startOfSeason')}`);
         const gameData = stats.data.gameData;
         const boxscoreData = stats.data.liveData.boxscore;
 
         if (game.rows.length === 0) {
             // Insert game
-            await pool.query(`INSERT INTO games (
+            await db.query(`INSERT INTO games (
                     game_pk,
                     home_team_id,
                     away_team_id,
@@ -54,7 +55,7 @@ export async function recordGames(gamesQueue, completeRecordedGames) {
                             ${boxscoreData.teams[team].players[player].stats.skaterStats?.hits || 0},
                             ${boxscoreData.teams[team].players[player].stats.skaterStats?.penaltyMinutes || 0}
                     )`;
-                    await pool.query(INSERT_game_stats).catch((error) => {
+                    await db.query(INSERT_game_stats).catch((error) => {
                         console.log(error);
                         console.log('Error with query:', INSERT_game_stats);
                     });
@@ -81,14 +82,14 @@ export async function recordGames(gamesQueue, completeRecordedGames) {
                         hits = ${boxscoreData.teams[team].players[player].stats.skaterStats?.hits || 0},
                         penalty_minutes = ${boxscoreData.teams[team].players[player].stats.skaterStats?.penaltyMinutes || 0}
                         WHERE game_pk = ${gamePK} AND player_id = '${player.replace("'","''")}'`;
-                    await pool.query(UPDATE_game_stats).catch((error) => {
+                    await db.query(UPDATE_game_stats).catch((error) => {
                         console.log(error);
                         console.log('Error with query:', UPDATE_game_stats);
                     });
                 }
             )});
             // Update game
-            await pool.query(`UPDATE games SET
+            await db.query(`UPDATE games SET
                 home_team_id = ${gameData.teams.home.id},
                 away_team_id = ${gameData.teams.away.id},
                 status = ${gameData.status.statusCode},

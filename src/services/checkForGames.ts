@@ -1,10 +1,10 @@
 import axios from "axios";
-import { root } from "../app";
 import { isGameRecordable } from "../utils/utils";
+const config = require('config');
 
 export async function checkForGames(gamesQueue, completeRecordedGames) {
     try {
-        const response = await axios.get(`${root}/schedule/?season=20222023`);
+        const response = await axios.get(`${config.get('liveData.rootURL')}/schedule/?season=${config.get('liveData.startingSeason')}`);
         for (let date of response.data.dates) {
             for (let game of date.games) {
                 if (isGameRecordable(game.status.statusCode)
