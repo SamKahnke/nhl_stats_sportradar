@@ -1,7 +1,7 @@
 import { checkForGames } from "./checkForGames";
 import { recordGames } from "./recordGames";
 
-export function runEngine() {
+export function runEngine(): void {
     // Queue
     let gamesQueue: string[] = [];
     let completeRecordedGames: string[] = [];
