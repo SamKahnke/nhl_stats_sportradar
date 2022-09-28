@@ -10,11 +10,11 @@ export interface GameStat {
     gamePK: string;
     playerID: string;
     teamID: number;
-    teamName: string | undefined | null;
-    name: string | undefined | null;
+    teamName: string | null;
+    name: string | null;
     age: number;
     number: number;
-    position: string | undefined | null;
+    position: string | null;
     assists: number;
     goals: number;
     hits: number;

@@ -85,7 +85,7 @@ export async function RecordGames(gamesQueue: string[], completeRecordedGames: s
                 });
             });
             // Remove completed games from queue
-            if (isGameComplete(simpleGameData.status)) {
+            if (isGameComplete(simpleGameData.status.statusCode)) {
                 gamesQueue.splice(gamesQueue.indexOf(gamePK), 1);
             }
         } else {
