@@ -9,14 +9,14 @@ export async function RecordGames(gamesQueue: string[], completeRecordedGames: s
     Promise.all(gamesQueue.map(async (gamePK) => {
         const game = await db.query(`SELECT * FROM games WHERE game_pk = ${gamePK}`);
         const stats = await axios.get(`${config.get('liveData.rootURL')}/game/${gamePK}/feed/live/diffPatch?startTimecode=${config.get('liveData.startOfSeason')}`);
-        const simpleGameData = stats.data.gameData;
+        const basicGameData = stats.data.gameData;
         const boxscoreData = stats.data.liveData.boxscore;
         const gameData: Game = {
             gamePK: gamePK,
-            homeTeamID: simpleGameData.teams.home.id,
-            awayTeamID: simpleGameData.teams.away.id,
-            status: simpleGameData.status.statusCode,
-            statusName: `'${simpleGameData.status.detailedState}'`
+            homeTeamID: basicGameData.teams.home.id,
+            awayTeamID: basicGameData.teams.away.id,
+            status: basicGameData.status.statusCode,
+            statusName: `'${basicGameData.status.detailedState}'`
         }
 
         if (game.rows.length === 0) {
@@ -45,7 +45,7 @@ export async function RecordGames(gamesQueue: string[], completeRecordedGames: s
                         teamID: boxscoreData.teams[team].team.id,
                         teamName: `'${boxscoreData.teams[team].team.name.replace("'","''")}'` || null,
                         name: `'${boxscoreData.teams[team].players[player].person.fullName.replace("'","''")}'` || null,
-                        age: simpleGameData.players[player].currentAge || null,
+                        age: basicGameData.players[player].currentAge || null,
                         number: boxscoreData.teams[team].players[player].jerseyNumber || null,
                         position: `'${boxscoreData.teams[team].players[player].position.name.replace("'","''")}'` || null,
                         assists: boxscoreData.teams[team].players[player].stats.skaterStats?.assists || 0,
@@ -87,7 +87,7 @@ export async function RecordGames(gamesQueue: string[], completeRecordedGames: s
                 });
             });
             // Remove completed games from queue
-            if (isGameComplete(simpleGameData.status.statusCode)) {
+            if (isGameComplete(basicGameData.status.statusCode)) {
                 gamesQueue.splice(gamesQueue.indexOf(gamePK), 1);
             }
         } else {
@@ -100,7 +100,7 @@ export async function RecordGames(gamesQueue: string[], completeRecordedGames: s
                         teamID: boxscoreData.teams[team].team.id,
                         teamName: `'${boxscoreData.teams[team].team.name.replace("'","''")}'` || null,
                         name: `'${boxscoreData.teams[team].players[player].person.fullName.replace("'","''")}'` || null,
-                        age: simpleGameData.players[player].currentAge || null,
+                        age: basicGameData.players[player].currentAge || null,
                         number: boxscoreData.teams[team].players[player].jerseyNumber || null,
                         position: `'${boxscoreData.teams[team].players[player].position.name.replace("'","''")}'` || null,
                         assists: boxscoreData.teams[team].players[player].stats.skaterStats?.assists || 0,
@@ -139,7 +139,7 @@ export async function RecordGames(gamesQueue: string[], completeRecordedGames: s
             );
         }
         // Remove completed games from queue
-        if (isGameComplete(simpleGameData.status.statusCode)) {
+        if (isGameComplete(basicGameData.status.statusCode)) {
             gamesQueue.splice(gamesQueue.indexOf(gamePK), 1);
             if (!completeRecordedGames.includes(gamePK)) {
                 completeRecordedGames.push(gamePK);
