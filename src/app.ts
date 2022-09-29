@@ -1,6 +1,6 @@
 import express from 'express';
 import { Pool } from 'pg';
-import { InitializeDBTables } from './services/initializeDBTables';
+import { InitializeDBTables } from './services/InitializeDBTables';
 import { RunPipeline } from './services/RunPipeline';
 
 const app = express();
