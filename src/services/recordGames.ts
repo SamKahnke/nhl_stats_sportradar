@@ -53,6 +53,7 @@ export async function RecordGames(gamesQueue: string[], completeRecordedGames: s
                         hits: rawBoxscoreData.teams[team].players[player].stats.skaterStats?.hits || 0,
                         penaltyMinutes: rawBoxscoreData.teams[team].players[player].stats.skaterStats?.penaltyMinutes || 0
                     }
+                    
                     const INSERT_game_stats =
                         `INSERT INTO game_stats (
                             game_pk,
@@ -80,6 +81,7 @@ export async function RecordGames(gamesQueue: string[], completeRecordedGames: s
                                 ${gameStatData.hits},
                                 ${gameStatData.penaltyMinutes}
                             )`;
+
                     await db.query(INSERT_game_stats).catch((error) => {
                         console.log('Error in INSERT_game_stats:', error);
                         console.log('Query:', INSERT_game_stats);
@@ -108,6 +110,7 @@ export async function RecordGames(gamesQueue: string[], completeRecordedGames: s
                         hits: rawBoxscoreData.teams[team].players[player].stats.skaterStats?.hits || 0,
                         penaltyMinutes: rawBoxscoreData.teams[team].players[player].stats.skaterStats?.penaltyMinutes || 0
                     }
+
                     const UPDATE_game_stats =
                         `UPDATE game_stats SET
                             player_id = ${gameStatData.playerID},
@@ -122,6 +125,7 @@ export async function RecordGames(gamesQueue: string[], completeRecordedGames: s
                             hits = ${gameStatData.hits},
                             penalty_minutes = ${gameStatData.penaltyMinutes}
                             WHERE game_pk = ${gameStatData.gamePK} AND player_id = ${gameStatData.playerID}`;
+
                     await db.query(UPDATE_game_stats).catch((error) => {
                         console.log('Error in UPDATE_game_stats:', error);
                         console.log('Query:', UPDATE_game_stats);
