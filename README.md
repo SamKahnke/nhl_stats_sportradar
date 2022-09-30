@@ -6,7 +6,7 @@
 5. Run ```npm start```.
 
 #### Data Pipeline
-When the app starts, it creates the necessary tables if they don't exist. Then, it gathers all game data and relevent statistics per player (only includes ongoing and completed games for this current season). As long as the app is running, it will record live games. If it's shut off and turned back on, it will record any missing data up to that point.
+When the app starts, it creates the necessary tables if they don't exist. Then, it gathers all game data and relevent statistics per player (only including ongoing and completed games for this current season). As long as the app is running, it will record live games. If it's shut off and turned back on, it will record any missing data up to that point.
 
 #### API
 You can access the data through a few endpoints. With the app running, search ```http://localhost:3000``` in your browser, followed by a valid path:
