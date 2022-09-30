@@ -12,7 +12,7 @@
     },
     "liveData": {
         "rootURL": "https://statsapi.web.nhl.com/api/v1",
-        "startingSeason": "20222023",
+        "startingSeason": "20222023",  
         "startOfSeason": "20220101_000000"
     }
 }
