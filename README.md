@@ -20,3 +20,7 @@ You can access the data through a few endpoints. With the app running, search ``
 ```http://localhost:3000/stats``` Returns all statistics gathered from live games, each row representing a player's stats for a particular game.
 ##### /stats?gamePK=&playerID=&teamID=
 ```http://localhost:3000/stats?playerID=ID8480821&gamePK=2022010022&teamID=17``` Returns a single player's stats for a certain game, on a certain team. These parameters are optional. You can include and exclude gamePK, playerID, and/or teamID to use them as filters. For example, ```http://localhost:3000/stats?playerID=ID8480821``` would return a certain player's stats for every game they've played. If you wanted to only get stats for when that player was on team 17, you'd use ```http://localhost:3000/stats?playerID=ID8480821&teamID=17```.
+##### / or /readme
+Redirects to this README (Hello)
+##### *
+Defaults to an error page that redirects here
