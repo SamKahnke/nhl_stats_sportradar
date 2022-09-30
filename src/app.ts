@@ -2,7 +2,7 @@ import express from 'express';
 import { Pool, QueryResult } from 'pg';
 import { InitializeDBTables } from './services/InitializeDBTables';
 import { RunPipeline } from './services/RunPipeline';
-import { Game } from './services/types';
+import { Game, Stat } from './services/types';
 
 const app = express();
 const config = require('config');
@@ -20,8 +20,8 @@ export const db = new Pool({
 const connectToDB = async () => {
   try {
     await db.connect();
-  } catch (err) {
-    console.log(err);
+  } catch (error) {
+    console.log('Error connecting to database:', error);
   }
 };
 
@@ -38,30 +38,132 @@ InitializeDBTables().then(() => {
   RunPipeline();
 });
 
-app.get(`/games`, async (req, res, next) => {
-  const rawData = await db.query(
-    `SELECT
+app.get('/games', (req, res) => {
+  const data: Game[] = [];
+  
+  const params: string = buildParams([
+    { column: 'home_team_id', value: req.query.homeTeamID },
+    { column: 'away_team_id', value: req.query.awayTeamID }
+  ]);
+
+  const query = `SELECT
       game_pk,
       home_team_id,
       away_team_id,
       status,
       status_name
-    FROM games`
-  );
+    FROM games
+    ${params}`;
 
-  const data: Game[] = rawData.rows.map((row) => {
-    return {
-      gamePK: row.game_pk,
-      homeTeamID: row.home_team_id,
-      awayTeamID: row.away_team_id,
-      status: row.status,
-      statusName: row.status_name
+  db.query(query, (error, result) => {
+    result.rows.map((row) => {
+      data.push({
+        gamePK: row.game_pk,
+        homeTeamID: row.home_team_id,
+        awayTeamID: row.away_team_id,
+        status: row.status,
+        statusName: row.status_name
+      });
+    });
+    if (error) {
+      console.log('Error executing query:', error);
     }
-  })
-
-  res.json(data);
+    res.json(data);
+  });
 });
 
+app.get('/games/:gamePK', (req, res) => {
+  const data: Game[] = [];
+  const query = `SELECT
+      game_pk,
+      home_team_id,
+      away_team_id,
+      status,
+      status_name
+    FROM games
+    WHERE game_pk = ${req.params.gamePK}`;
+
+  db.query(query, (error, result) => {
+    result.rows.map((row) => {
+      data.push({
+        gamePK: row.game_pk,
+        homeTeamID: row.home_team_id,
+        awayTeamID: row.away_team_id,
+        status: row.status,
+        statusName: row.status_name
+      });
+    });
+    if (error) {
+      console.log('Error executing query:', error);
+    }
+    res.json(data);
+  });
+});
+
+app.get('/stats', (req, res) => {
+  const data: Stat[] = [];
+
+  const params: string = buildParams([
+    { column: 'game_pk', value: req.query.gamePK },
+    { column: 'player_id', value: req.query.playerID },
+    { column: 'team_id', value: req.query.teamID }
+  ]);
+
+  const query = `SELECT
+      game_pk,
+      player_id,
+      team_id,
+      team_name,
+      name,
+      age,
+      number,
+      position,
+      assists,
+      goals,
+      hits,
+      penalty_minutes
+    FROM stats
+    ${params}`;
+
+  db.query(query, (error, result) => {
+    result.rows.map((row) => {
+      data.push({
+        gamePK: row.game_pk,
+        playerID: row.player_id,
+        teamID: row.team_id,
+        teamName: row.team_name,
+        name: row.name,
+        age: row.age,
+        number: row.number,
+        position: row.position,
+        assists: row.assists,
+        goals: row.goals,
+        hits: row.hits,
+        penaltyMinutes: row.penalty_minutes
+      });
+    });
+    if (error) {
+      console.log('Error executing query:', error);
+    }
+    res.json(data);
+  });
+});
+
+export function buildParams(params: { column: string, value: any }[]) {
+  let statement: string = '';
+  params.map((param) => {
+    if (param.value) {
+      if (statement) {
+        statement = statement + ' AND ';
+      } else {
+        statement = 'WHERE '
+      }
+      statement = statement + `${param.column} = ${typeof(param.value) === 'string' ? `'${param.value}'` : param.value}`;
+    }
+  });
+
+  return statement;
+}
 
 
 
