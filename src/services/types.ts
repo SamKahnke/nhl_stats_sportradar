@@ -6,7 +6,7 @@ export interface Game {
     statusName: string;
 }
 
-export interface GameStat {
+export interface Stat {
     gamePK: string;
     playerID: string;
     teamID: number;

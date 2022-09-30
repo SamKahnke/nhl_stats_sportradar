@@ -16,9 +16,9 @@ export async function InitializeDBTables(): Promise<void> {
         console.log('CREATE TABLE games:', error);
     });
 
-    // game_stats
+    // stats
     await db.query(
-        `CREATE TABLE if not exists game_stats (
+        `CREATE TABLE if not exists stats (
             id serial primary key,
             game_pk integer NOT NULL,
             player_id varchar(30) NOT NULL,
@@ -34,6 +34,6 @@ export async function InitializeDBTables(): Promise<void> {
             penalty_minutes integer
         )`
     ).catch((error) => {
-        console.log('CREATE TABLE game_stats:', error);
+        console.log('CREATE TABLE stats:', error);
     });
 }
