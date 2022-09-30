@@ -1,5 +1,5 @@
 #### Installation
-1. Unzip the files you recieved and save the parent directory as "nhl_stats".
+1. Unzip the provided files and save the parent directory as something like "nhl_stats".
 2. Create a postgres database and edit the "database" values in config/default.json to match your new database.
 3. Run ```nvm use 14``` or similar to switch to node 14.
 4. Run ```npm install```.
