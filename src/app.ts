@@ -38,6 +38,10 @@ InitializeDBTables().then(() => {
   RunPipeline();
 });
 
+app.get('/', (req, res) => {
+  res.send('README.txt');
+});
+
 app.get('/games', (req, res) => {
   const data: Game[] = [];
   
