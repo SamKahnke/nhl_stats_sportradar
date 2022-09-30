@@ -11,9 +11,9 @@ When the app starts, it creates the necessary tables if they don't exist. Then, 
 #### API
 You can access the data through a few endpoints. With the app running, search ```http://localhost:3000``` in your browser, followed by a valid path:
 ##### /games
-```http://localhost:3000/games``` Returns basic data for all games
+```http://localhost:3000/games``` Returns basic data for all games. This data includes the teams that played, as well as the game's status (ex: "Final", "In Progress").
 ##### /games/:gamePK
-```http://localhost:3000/games/2022010004``` Returns basic data for a single game with id 2022010004
+```http://localhost:3000/games/2022010004``` Returns basic data for a single game with id 2022010004.
 ##### /games?homeTeamID=&awayTeamID=
 ```http://localhost:3000/games?awayTeamID=4&homeTeamID=7``` Returns all basic data for games where the team with id 4 was Away and the team with id 7 was Home. These parameters are optional. You can exclude awayTeamID and/or homeTeamID to remove them as filters.
 ##### /stats
