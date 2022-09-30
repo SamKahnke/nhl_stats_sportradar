@@ -1,7 +1,8 @@
 import express from 'express';
-import { Pool } from 'pg';
+import { Pool, QueryResult } from 'pg';
 import { InitializeDBTables } from './services/InitializeDBTables';
 import { RunPipeline } from './services/RunPipeline';
+import { Game } from './services/types';
 
 const app = express();
 const config = require('config');
@@ -35,6 +36,30 @@ app.listen(port, () => {
 InitializeDBTables().then(() => {
   // Open the pipeline
   RunPipeline();
+});
+
+app.get(`/games`, async (req, res, next) => {
+  const rawData = await db.query(
+    `SELECT
+      game_pk,
+      home_team_id,
+      away_team_id,
+      status,
+      status_name
+    FROM games`
+  );
+
+  const data: Game[] = rawData.rows.map((row) => {
+    return {
+      gamePK: row.game_pk,
+      homeTeamID: row.home_team_id,
+      awayTeamID: row.away_team_id,
+      status: row.status,
+      statusName: row.status_name
+    }
+  })
+
+  res.json(data);
 });
 
 
