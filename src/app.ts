@@ -38,8 +38,8 @@ InitializeDBTables().then(() => {
   RunPipeline();
 });
 
-app.get('/', (req, res) => {
-  res.send('README.txt');
+app.get(['/', '/readme'], (req, res) => {
+  res.redirect('https://github.com/SamKahnke/nhl_stats_sportradar/blob/master/README.md');
 });
 
 app.get('/games', (req, res) => {
@@ -152,6 +152,10 @@ app.get('/stats', (req, res) => {
     res.json(data);
   });
 });
+
+app.get('*', function (req, res) {
+  res.send('Invalid url. Please see documentation <a target="_blank" href="https://github.com/SamKahnke/nhl_stats_sportradar/blob/master/README.md">here</a>.');
+})
 
 export function buildParams(params: { column: string, value: any }[]) {
   let statement: string = '';
