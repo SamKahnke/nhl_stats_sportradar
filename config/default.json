@@ -1,4 +1,5 @@
 {
+    "readme": "https://github.com/SamKahnke/nhl_stats_sportradar/blob/master/README.md",
     "host": {
         "port": 3000
     },
@@ -13,5 +14,5 @@
         "rootURL": "https://statsapi.web.nhl.com/api/v1",
         "startingSeason": "20222023",
         "startOfSeason": "20220101_000000"
-    } 
+    }
 }

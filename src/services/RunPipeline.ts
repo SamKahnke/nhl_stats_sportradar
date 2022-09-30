@@ -1,5 +1,4 @@
-import { FindGames } from './FindGames';
-import { RecordGames } from './RecordGames';
+import * as services from '.';
 
 export function RunPipeline(): void {
     console.log('RunPipeline');
@@ -8,15 +7,15 @@ export function RunPipeline(): void {
     let completeRecordedGames: string[] = [];
 
     // Search for games to record
-    FindGames(gamesQueue, completeRecordedGames)
+    services.FindGames(gamesQueue, completeRecordedGames)
     setInterval(() => {
-        FindGames(gamesQueue, completeRecordedGames);
+        services.FindGames(gamesQueue, completeRecordedGames);
     }, 10000);
 
     // Record games in queue
     setInterval(() => {
         if (gamesQueue.length > 0) {
-            RecordGames(gamesQueue, completeRecordedGames);
+            services.RecordGames(gamesQueue, completeRecordedGames);
         }
     }, 1000);
 }

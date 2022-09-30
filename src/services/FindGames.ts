@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { isGameRecordable } from '../utils/utils';
+import { isGameRecordable } from './utils';
 const config = require('config');
 
 export async function FindGames(gamesQueue: string[], completeRecordedGames: string[]): Promise<void> {

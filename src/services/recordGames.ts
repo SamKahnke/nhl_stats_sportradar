@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { db } from '../app';
-import { isGameComplete } from '../utils/utils';
-import { Game, Stat } from './types';
+import { isGameComplete } from './utils';
+import { Game, Stat } from '../types';
 const config = require('config');
 
 export async function RecordGames(gamesQueue: string[], completeRecordedGames: string[]): Promise<void> {
