@@ -30,8 +30,8 @@ export function getGames(req, res) {
                 statusName: row.status_name
             });
         });
-        if (error) {
-            console.log('Error executing query:', error);
+        if (error && process.env.NODE_ENV !== 'test') {
+            console.error('Error executing query:', error);
         }
         res.json(data);
     });

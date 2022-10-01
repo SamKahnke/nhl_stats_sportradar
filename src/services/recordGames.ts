@@ -5,7 +5,6 @@ import { Game, Stat } from '../types';
 const config = require('config');
 
 export async function RecordGames(gamesQueue: string[], completeRecordedGames: string[]): Promise<void> {
-    console.log('RecordGames');
     Promise.all(gamesQueue.map(async (gamePK) => {
         const game = await db.query(`SELECT * FROM games WHERE game_pk = ${gamePK}`);
         const stats = await axios.get(`${config.get('liveData.rootURL')}/game/${gamePK}/feed/live/diffPatch?startTimecode=${config.get('liveData.startOfSeason')}`);
@@ -28,13 +27,15 @@ export async function RecordGames(gamesQueue: string[], completeRecordedGames: s
                     away_team_id,
                     status,
                     status_name
-                ) VALUES (
+                ) SELECT
                     ${gameData.gamePK},
                     ${gameData.homeTeamID},
                     ${gameData.awayTeamID},
                     ${gameData.status},
                     ${gameData.statusName}
-                )`
+                WHERE NOT EXISTS
+                    (SELECT * FROM games 
+                    WHERE game_pk = ${gamePK})`
             );
             // Insert stats for each player
             Object.keys(rawBoxscoreData.teams).map((team, index) => {
@@ -43,11 +44,11 @@ export async function RecordGames(gamesQueue: string[], completeRecordedGames: s
                         gamePK: gamePK,
                         playerID: `'${player.replace("'","''")}'`,
                         teamID: rawBoxscoreData.teams[team].team.id,
-                        teamName: `'${rawBoxscoreData.teams[team].team.name.replace("'","''")}'` || null,
-                        name: `'${rawBoxscoreData.teams[team].players[player].person.fullName.replace("'","''")}'` || null,
+                        teamName: `'${rawBoxscoreData.teams[team].team.name?.replace("'","''")}'` || null,
+                        name: `'${rawBoxscoreData.teams[team].players[player].person.fullName?.replace("'","''")}'` || null,
                         age: rawGameData.players[player].currentAge || null,
                         number: rawBoxscoreData.teams[team].players[player].jerseyNumber || null,
-                        position: `'${rawBoxscoreData.teams[team].players[player].position.name.replace("'","''")}'` || null,
+                        position: `'${rawBoxscoreData.teams[team].players[player].position.name?.replace("'","''")}'` || null,
                         assists: rawBoxscoreData.teams[team].players[player].stats.skaterStats?.assists || 0,
                         goals: rawBoxscoreData.teams[team].players[player].stats.skaterStats?.goals || 0,
                         hits: rawBoxscoreData.teams[team].players[player].stats.skaterStats?.hits || 0,
@@ -67,7 +68,7 @@ export async function RecordGames(gamesQueue: string[], completeRecordedGames: s
                             assists,
                             goals,
                             hits,
-                            penalty_minutes) VALUES (
+                            penalty_minutes) SELECT
                                 ${statData.gamePK},
                                 ${statData.playerID},
                                 ${statData.teamID},
@@ -80,11 +81,16 @@ export async function RecordGames(gamesQueue: string[], completeRecordedGames: s
                                 ${statData.goals},
                                 ${statData.hits},
                                 ${statData.penaltyMinutes}
-                            )`;
+                        WHERE NOT EXISTS
+                            (SELECT * FROM stats 
+                            WHERE game_pk = ${statData.gamePK}
+                            AND player_id = ${statData.playerID})`;
 
                     await db.query(INSERT_stats).catch((error) => {
-                        console.log('Error in INSERT_stats:', error);
-                        console.log('Query:', INSERT_stats);
+                        if (process.env.NODE_ENV !== 'test') {
+                            console.error('Error in INSERT_stats:', error);
+                            console.error('Query:', INSERT_stats);
+                        }
                     });
                 });
             });
@@ -93,6 +99,7 @@ export async function RecordGames(gamesQueue: string[], completeRecordedGames: s
                 gamesQueue.splice(gamesQueue.indexOf(gamePK), 1);
             }
         } else {
+            console.log("update firing");
             // Update stats for each player
             Object.keys(rawBoxscoreData.teams).map((team, index) => {
                 return Object.keys(rawBoxscoreData.teams[team].players).map(async (player, index) => {
@@ -100,11 +107,11 @@ export async function RecordGames(gamesQueue: string[], completeRecordedGames: s
                         gamePK: gamePK,
                         playerID: `'${player.replace("'","''")}'`,
                         teamID: rawBoxscoreData.teams[team].team.id,
-                        teamName: `'${rawBoxscoreData.teams[team].team.name.replace("'","''")}'` || null,
-                        name: `'${rawBoxscoreData.teams[team].players[player].person.fullName.replace("'","''")}'` || null,
+                        teamName: `'${rawBoxscoreData.teams[team].team.name?.replace("'","''")}'` || null,
+                        name: `'${rawBoxscoreData.teams[team].players[player].person.fullName?.replace("'","''")}'` || null,
                         age: rawGameData.players[player].currentAge || null,
                         number: rawBoxscoreData.teams[team].players[player].jerseyNumber || null,
-                        position: `'${rawBoxscoreData.teams[team].players[player].position.name.replace("'","''")}'` || null,
+                        position: `'${rawBoxscoreData.teams[team].players[player].position.name?.replace("'","''")}'` || null,
                         assists: rawBoxscoreData.teams[team].players[player].stats.skaterStats?.assists || 0,
                         goals: rawBoxscoreData.teams[team].players[player].stats.skaterStats?.goals || 0,
                         hits: rawBoxscoreData.teams[team].players[player].stats.skaterStats?.hits || 0,
@@ -124,11 +131,13 @@ export async function RecordGames(gamesQueue: string[], completeRecordedGames: s
                             goals = ${statData.goals},
                             hits = ${statData.hits},
                             penalty_minutes = ${statData.penaltyMinutes}
-                            WHERE game_pk = ${statData.gamePK} AND player_id = ${statData.playerID}`;
+                            WHERE game_pk = ${parseInt(statData.gamePK)} AND player_id = ${statData.playerID}`;
 
                     await db.query(UPDATE_stats).catch((error) => {
-                        console.log('Error in UPDATE_stats:', error);
-                        console.log('Query:', UPDATE_stats);
+                        if (process.env.NODE_ENV !== 'test') {
+                            console.error('Error in UPDATE_stats:', error);
+                            console.error('Query:', UPDATE_stats);
+                        }
                     });
                 }
             )});

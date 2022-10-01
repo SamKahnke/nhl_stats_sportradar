@@ -4,30 +4,35 @@
   "description": "",
   "main": "app.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "start": "npx tsc && node dist/app.js",
     "lint": "npx eslint . --ext .ts",
     "pg:init": "pg_ctl init -D data",
     "pg:start": "pg_ctl -D data start",
     "pg:createdb": "createdb -h 127.0.0.1 app",
-    "pg:stop": "pg_ctl -D data stop"
+    "pg:stop": "pg_ctl -D data stop",
+    "test": "jest --runInBand --detectOpenHandles --forceExit"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
     "@types/express": "^4.17.1",
+    "@types/jest": "^29.1.1",
     "@types/node": "^18.7.20",
     "@types/pg": "^8.6.5",
     "@typescript-eslint/eslint-plugin": "^5.38.0",
     "@typescript-eslint/parser": "^5.38.0",
     "eslint": "^8.23.1",
+    "ts-jest": "^29.0.3",
     "ts-node": "^10.9.1",
     "typescript": "^4.8.3"
   },
   "dependencies": {
     "axios": "^0.27.2",
+    "babel-jest": "^29.1.2",
     "config": "^3.3.8",
     "express": "^4.17.1",
-    "pg": "^8.8.0"
+    "jest": "^29.1.2",
+    "pg": "^8.8.0",
+    "supertest": "^6.2.4"
   }
 }

@@ -45,8 +45,8 @@ export function getStats(req, res) {
 				penaltyMinutes: row.penalty_minutes
 			});
 		});
-		if (error) {
-			console.log('Error executing query:', error);
+		if (error && process.env.NODE_ENV !== 'test') {
+			console.error('Error executing query:', error);
 		}
 		res.json(data);
     });

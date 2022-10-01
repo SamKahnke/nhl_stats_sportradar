@@ -3,8 +3,9 @@ import { Pool } from 'pg';
 import * as api from './api';
 import * as services from './services';
 
-const app = express();
+export const app = express();
 const config = require('config');
+export const supertest = require("supertest");
 const port = config.get('host.port');
 
 // Database
@@ -18,23 +19,29 @@ export const db = new Pool({
 
 const connectToDB = async () => {
 	try {
-		await db.connect();
+		if (process.env.NODE_ENV !== 'test') {
+			await db.connect();
+		}
 	} catch (error) {
-		console.log('Error connecting to database:', error);
+		console.error('Error connecting to database:', error);
 	}
 };
 
 connectToDB();
 
 // Listen on port
-app.listen(port, () => {
-  	return console.log(`Express is listening at http://localhost:${port}`);
+export const appListener = app.listen(port, () => {
+	// if (process.env.NODE_ENV !== 'test') {
+		return console.log(`Express is listening at http://localhost:${port}`);
+	// }
 });
 
 // Initialize tables if none exist
 services.InitializeDBTables().then(() => {
-	// Open the pipeline
-	services.RunPipeline();
+	if (process.env.NODE_ENV !== 'test') {
+		// Open the pipeline
+		services.RunPipeline();
+	}
 });
 
 // API Endpoints

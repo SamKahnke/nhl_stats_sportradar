@@ -10,12 +10,12 @@ export function RunPipeline(): void {
     services.FindGames(gamesQueue, completeRecordedGames)
     setInterval(() => {
         services.FindGames(gamesQueue, completeRecordedGames);
-    }, 10000);
+    }, 60000);
 
     // Record games in queue
     setInterval(() => {
         if (gamesQueue.length > 0) {
             services.RecordGames(gamesQueue, completeRecordedGames);
         }
-    }, 1000);
+    }, 10000);
 }

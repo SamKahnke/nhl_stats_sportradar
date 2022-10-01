@@ -1,10 +1,10 @@
 import { db } from '../app';
 
 export async function InitializeDBTables(): Promise<void> {
-    console.log('InitializeDBTables');
+    console.log('InitializeDBTable');
     // games
     await db.query(
-        `CREATE TABLE if not exists games (
+        `CREATE TABLE IF NOT EXISTS games (
             id serial primary key,
             game_pk integer NOT NULL,
             home_team_id integer NOT NULL,
@@ -12,13 +12,11 @@ export async function InitializeDBTables(): Promise<void> {
             status integer NOT NULL,
             status_name varchar(30) NOT NULL
         )`
-    ).catch((error) => {
-        console.log('CREATE TABLE games:', error);
-    });
+    );
 
     // stats
     await db.query(
-        `CREATE TABLE if not exists stats (
+        `CREATE TABLE IF NOT EXISTS stats (
             id serial primary key,
             game_pk integer NOT NULL,
             player_id varchar(30) NOT NULL,
@@ -33,7 +31,5 @@ export async function InitializeDBTables(): Promise<void> {
             hits integer,
             penalty_minutes integer
         )`
-    ).catch((error) => {
-        console.log('CREATE TABLE stats:', error);
-    });
+    );
 }
