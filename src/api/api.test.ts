@@ -1,14 +1,13 @@
 import { app, db, supertest, appListener } from '../app';
 
-// Open and close connection
 beforeAll(done => {
-  done();
+	done();
 });
 
 afterAll(done => {
-  db.end();
-  appListener.close();
-  done();
+	db.end();
+	appListener.close();
+	done();
 });
 
 const gameData = {
@@ -22,7 +21,7 @@ const gameData = {
 const statData = {
 	gamePK: 1,
 	playerID: 'ID1',
-	teamID: 1,
+	teamID: 1000,
 	teamName: 'Test Team',
 	name: 'Test Player',
 	age: 30,
@@ -82,10 +81,10 @@ const insertStatQuery =
 	)`;
 
 const initializeTestData = async () => {
-	await clearTestData().then(async () => {
-		await db.query(insertGameQuery);
-		await db.query(insertStatQuery);
-	});
+	await db.query(deleteGameQuery);
+	await db.query(deleteStatQuery);
+	await db.query(insertGameQuery);
+	await db.query(insertStatQuery);
 }
 
 const clearTestData = async () => {
@@ -93,9 +92,8 @@ const clearTestData = async () => {
 	await db.query(deleteStatQuery);
 }
 
-initializeTestData();
-
 test('GET /games', async () => {
+	await initializeTestData();
 	await supertest(app).get(`/games`)
 		.expect(200)
 		.then((response) => {
@@ -112,9 +110,11 @@ test('GET /games', async () => {
 				expect(typeof game.statusName).toBe('string');
 			})
 		});
+	await clearTestData();
 });
 
 test('GET /games?homeTeamID=&awayTeamID=', async () => {
+	await initializeTestData();
 	await supertest(app).get(`/games?homeTeamID=${gameData.homeTeamID}&awayTeamID=${gameData.awayTeamID}`)
 		.expect(200)
 		.then((response) => {
@@ -129,9 +129,11 @@ test('GET /games?homeTeamID=&awayTeamID=', async () => {
 			expect(response.body[0].status).toBe(gameData.status);
 			expect(response.body[0].statusName).toBe(gameData.statusName);
 		});
+	await clearTestData();
 });
 
 test('GET /games/{gamePK}', async () => {
+	await initializeTestData();
 	await supertest(app).get(`/games/${gameData.gamePK}`)
 		.expect(200)
 		.then((response) => {
@@ -146,9 +148,11 @@ test('GET /games/{gamePK}', async () => {
 			expect(response.body[0].status).toBe(gameData.status);
 			expect(response.body[0].statusName).toBe(gameData.statusName);
 		});
+	await clearTestData();
 });
 
 test('GET /stats?gamePK={gamePK}&playerID={playerID}&teamID={teamID}', async () => {
+	await initializeTestData();
 	await supertest(app).get(`/stats?gamePK=${statData.gamePK}&playerID=${statData.playerID}&teamID=${statData.teamID}`)
 		.expect(200)
 		.then((response) => {
@@ -170,6 +174,5 @@ test('GET /stats?gamePK={gamePK}&playerID={playerID}&teamID={teamID}', async () 
 			expect(response.body[0].hits).toBe(statData.hits);
 			expect(response.body[0].penaltyMinutes).toBe(statData.penaltyMinutes);
 		});
+	await clearTestData();
 });
-
-clearTestData();

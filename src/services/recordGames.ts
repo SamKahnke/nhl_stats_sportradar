@@ -99,7 +99,6 @@ export async function RecordGames(gamesQueue: string[], completeRecordedGames: s
                 gamesQueue.splice(gamesQueue.indexOf(gamePK), 1);
             }
         } else {
-            console.log("update firing");
             // Update stats for each player
             Object.keys(rawBoxscoreData.teams).map((team, index) => {
                 return Object.keys(rawBoxscoreData.teams[team].players).map(async (player, index) => {
