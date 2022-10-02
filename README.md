@@ -1,12 +1,12 @@
 #### Installation
-1. Unzip the provided files and save the parent directory as something like "nhl_stats".
-2. Create a postgres database and edit the "database" values in config/default.json and config/test.json to match your new database. I used pgAdmin 4 to manage my database.
+1. Unzip the provided files and save the folder as something like "nhl_stats".
+2. Create a postgres database and edit the "database" values in config/default.json and config/test.json to match your new database (username, password, database name, etc). I used pgAdmin 4 to manage my db.
 3. Run ```nvm use 14``` or similar to switch to node 14.
 4. Run ```npm install```.
-5. Run ```npm start```.
+5. Run ```npm start``` to start the app. This will record live data to your database on port 5000 and open an API on port 3000.
 
 #### Data Pipeline
-When the app starts, it creates the necessary tables if they don't exist. Then, it gathers all game data and relevent statistics per player (only including ongoing and completed games for this current season). As long as the app is running, it will record live games. If it's shut off and turned back on, it will record any missing data up to that point.
+When the app starts, it creates the necessary tables if they don't exist. Then, it gathers game data and statistics per player for this season's ongoing and completed games. As long as the app is running, it will record live games. If it's shut off and turned back on, it will record any missing data up to that point.
 
 #### API
 You can access the data through a few endpoints. With the app running, search ```http://localhost:3000``` in your browser, followed by a valid path:
