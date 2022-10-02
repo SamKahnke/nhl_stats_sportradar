@@ -1,6 +1,6 @@
 #### Installation
 1. Unzip the provided files and save the parent directory as something like "nhl_stats".
-2. Create a postgres database and edit the "database" values in config/default.json to match your new database.
+2. Create a postgres database and edit the "database" values in config/default.json and config/test.json to match your new database. *I usually would not have pushed the config files to github, but I did here for simplicity.*
 3. Run ```nvm use 14``` or similar to switch to node 14.
 4. Run ```npm install```.
 5. Run ```npm start```.
@@ -23,5 +23,5 @@ You can access the data through a few endpoints. With the app running, search ``
 ##### / or /readme
 Redirects to this README (Hello)
 
-#### Command Line
-
+#### Testing
+Run ```npm test``` to run the testing suite. Given more time, I would expand testing to the pipeline services as well.
