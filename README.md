@@ -24,4 +24,4 @@ You can access the data through a few endpoints. With the app running, search ``
 Redirects to this README.
 
 #### Testing
-Run ```npm test``` to run the testing suite. Given more time, I would expand testing to the pipeline services as well.
+Run ```npm test``` to run the testing suite. Given more time, I would create unit tests for the pipeline services.
