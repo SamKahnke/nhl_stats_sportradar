@@ -9,7 +9,7 @@
 When the app starts, it creates the necessary tables if they don't exist. Then, it gathers game data and statistics per player for this season's ongoing and completed games. As long as the app is running, it will record live games. If it's shut off and turned back on, it will record any missing data up to that point.
 
 #### API
-You can access the data through a few endpoints. With the app running, search ```http://localhost:3000``` in your browser, followed by a valid path:
+You can access the data through a few endpoints. With the app running, search ```http://localhost:3000``` in your web browser, followed by a valid path:
 ##### /games
 ```http://localhost:3000/games```  Returns basic data for all games. This data includes the teams that played, as well as the game's status (ex: "Final", "In Progress").
 ##### /games/:gamePK
