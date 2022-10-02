@@ -37,12 +37,12 @@ export const appListener = app.listen(port, () => {
 });
 
 // Initialize tables if none exist
-services.InitializeDBTables().then(() => {
-	if (process.env.NODE_ENV !== 'test') {
-		// Open the pipeline
-		services.RunPipeline();
-	}
-});
+if (process.env.NODE_ENV !== 'test') {
+	services.InitializeDBTables().then(() => {
+			// Open the pipeline
+			services.RunPipeline();
+	});
+}
 
 // API Endpoints
 app.get(['/', '/readme'], (req, res) => {

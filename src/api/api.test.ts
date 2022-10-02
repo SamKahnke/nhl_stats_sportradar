@@ -1,4 +1,5 @@
 import { app, db, supertest, appListener } from '../app';
+import { InitializeDBTables } from '../services';
 
 beforeAll(done => {
 	done();
@@ -43,16 +44,18 @@ const insertGameQuery =
 		away_team_id,
 		status,
 		status_name
-	) VALUES (
+	) SELECT
 		${gameData.gamePK},
 		${gameData.homeTeamID},
 		${gameData.awayTeamID},
 		${gameData.status},
-		'${gameData.statusName}'
-	)`;
+		${gameData.statusName ? `'${gameData.statusName}'` : null}
+	WHERE NOT EXISTS
+		(SELECT * FROM games 
+		WHERE game_pk = ${gameData.gamePK})`;
 
 const insertStatQuery = 
-	`INSERT into stats (
+	`INSERT INTO stats (
 		game_pk,
 		player_id,
 		team_id,
@@ -65,32 +68,48 @@ const insertStatQuery =
 		goals,
 		hits,
 		penalty_minutes)
-	VALUES (
+	SELECT
 		${statData.gamePK},
-		'${statData.playerID}',
+		${statData.playerID ? `'${statData.playerID}'` : null},
 		${statData.teamID},
-		'${statData.teamName}',
-		'${statData.name}',
+		${statData.teamName ? `'${statData.teamName}'` : null},
+		${statData.name ? `'${statData.name}'` : null},
 		${statData.age},
 		${statData.number},
-		'${statData.position}',
+		${statData.position ? `'${statData.position}'` : null},
 		${statData.assists},
 		${statData.goals},
 		${statData.hits},
 		${statData.penaltyMinutes}
-	)`;
+	WHERE NOT EXISTS
+		(SELECT * FROM stats 
+		WHERE game_pk = ${statData.gamePK}
+		AND player_id = '${statData.playerID}')`;
+
+		console.log(insertStatQuery);
 
 const initializeTestData = async () => {
-	await db.query(deleteGameQuery);
-	await db.query(deleteStatQuery);
-	await db.query(insertGameQuery);
-	await db.query(insertStatQuery);
+	await Promise.all([
+		await db.query(deleteGameQuery),
+		await db.query(deleteStatQuery),
+		await db.query(insertGameQuery),
+		await db.query(insertStatQuery)
+	]);
 }
 
 const clearTestData = async () => {
-	await db.query(deleteGameQuery);
-	await db.query(deleteStatQuery);
+	await Promise.all([
+		await db.query(deleteGameQuery),
+		await db.query(deleteStatQuery)
+	]);
 }
+
+test('Initialize Tables', async () => {
+	await InitializeDBTables().then((response) => {
+		console.log(response);
+		expect(response).toBeTruthy();
+	});
+});
 
 test('GET /games', async () => {
 	await initializeTestData();
@@ -110,7 +129,7 @@ test('GET /games', async () => {
 				expect(typeof game.statusName).toBe('string');
 			})
 		});
-	await clearTestData();
+		await clearTestData();
 });
 
 test('GET /games?homeTeamID=&awayTeamID=', async () => {
