@@ -1,6 +1,6 @@
 #### Installation
 1. Unzip the provided files and save the folder as something like "nhl_stats".
-2. Create a postgres database and edit the "database" values in config/default.json and config/test.json to match your new database (username, password, database name, etc). I used pgAdmin 4 to manage my db.
+2. Create a postgres database and edit the "database" values in config/default.json and config/test.json to match (username, password, database name, etc). I used pgAdmin 4 to manage my db.
 3. Run ```nvm use 14``` or similar to switch to node 14.
 4. Run ```npm install```.
 5. Run ```npm start``` to start the app. This will record live data to your database on port 5000 and open an API on port 3000.
