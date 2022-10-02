@@ -86,8 +86,6 @@ const insertStatQuery =
 		WHERE game_pk = ${statData.gamePK}
 		AND player_id = '${statData.playerID}')`;
 
-		console.log(insertStatQuery);
-
 const initializeTestData = async () => {
 	await Promise.all([
 		await db.query(deleteGameQuery),
