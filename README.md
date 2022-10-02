@@ -1,7 +1,7 @@
 #### Installation
 1. Unzip the provided files and save the folder as something like "nhl_stats".
 2. Create a postgres database and edit the "database" values in config/default.json and config/test.json to match (username, password, database name, etc). I used pgAdmin 4 to manage my database.
-3. Run ```nvm use 14``` to switch to node version 14.
+3. In your terminal, go to the root of the nhl_stats directory and run ```nvm use 14``` to switch to node version 14.
 4. Run ```npm install```.
 5. Run ```npm start``` to start the app. This will record live data to your database on port 5000 and open an API on port 3000.
 
@@ -15,7 +15,7 @@ You can access the data through a few endpoints. With the app running, search ``
 ##### /games/:gamePK
 ```http://localhost:3000/games/2022010004```  Returns basic data for a single game with id 2022010004.
 ##### /games?homeTeamID=&awayTeamID=
-```http://localhost:3000/games?awayTeamID=4&homeTeamID=7```  Returns all basic data for games where the team with id 4 was Away and the team with id 7 was Home. These parameters are optional. You can exclude awayTeamID and/or homeTeamID to remove them as filters.
+```http://localhost:3000/games?awayTeamID=4&homeTeamID=7```  Returns all basic data for games where the team with id 4 was Away and the team with id 7 was Home. These parameters are optional. You can include or exclude awayTeamID and/or homeTeamID to remove them as filters.
 ##### /stats
 ```http://localhost:3000/stats``` Returns all statistics gathered from live games, each row representing a player's stats for a particular game.
 ##### /stats?gamePK=&playerID=&teamID=
