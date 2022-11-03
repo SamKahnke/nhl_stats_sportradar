@@ -4,17 +4,21 @@ import * as api from './api';
 import * as services from './services';
 
 export const app = express();
-const config = require('config');
 export const supertest = require("supertest");
-const port = config.get('host.port');
+
+const config = require('config');
+
+if (process.env.NODE_ENV !== 'production') {
+  require('dotenv').config();
+}
 
 // Database
 export const db = new Pool({
-	host: config.get('database.host'),
-	user: config.get('database.user'),
-	database: config.get('database.database'),
-	password: config.get('database.password'),
-	port: config.get('database.port')
+	host: process.env.DB_HOST,
+	user: process.env.DB_USER,
+	database: process.env.DB_NAME,
+	password: process.env.DB_PASSWORD,
+	port: parseInt(process.env.DB_PORT)
 });
 
 const connectToDB = async () => {
@@ -30,10 +34,8 @@ const connectToDB = async () => {
 connectToDB();
 
 // Listen on port
-export const appListener = app.listen(port, () => {
-	// if (process.env.NODE_ENV !== 'test') {
-		return console.log(`Express is listening at http://localhost:${port}`);
-	// }
+export const appListener = app.listen(process.env.PORT, () => {
+	return console.log(`Express is listening at http://localhost:${process.env.PORT}`);
 });
 
 // Initialize tables if none exist
